@@ -21,7 +21,7 @@ pipeline {
         }
       }
       steps {
-        sh 'jfrog rt upload --url http://172.17.208.1/:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target\surefire-reports\TEST-calculatorTest.xml java-web-app/'
+        sh 'jfrog rt upload --url http://172.17.208.1/:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/'
       }
     }
   }
