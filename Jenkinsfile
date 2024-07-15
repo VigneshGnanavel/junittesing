@@ -23,7 +23,7 @@ pipeline {
             steps {
                 bat '''
                     cd "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\junitpipeline\\target\\surefire-reports"
-                    jf rt upload -f --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} TEST-calculatorTest.xml results/
+                    jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} TEST-calculatorTest.xml results/
                 '''
             }
         }
