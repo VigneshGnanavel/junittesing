@@ -1,5 +1,5 @@
 pipeline {
-  agent { label 'linux' }
+  agent any
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
   }
@@ -14,12 +14,15 @@ pipeline {
       }
     }
     stage('Upload to Artifactory') {
-      steps {
-        script {
-          docker.image('releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0').inside {
-            sh """jfrog rt upload url http://artifactory:8082/artifactory/ access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/"""
-          }
+      agent {
+        docker {
+          image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0'
+          reuseNode true
+          network 'artifactory'  
         }
+      }
+      steps {
+        sh """jfrog rt upload url http://artifactory:8082/artifactory/ access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/"""
       }
     }
   }
