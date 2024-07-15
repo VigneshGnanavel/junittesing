@@ -27,7 +27,7 @@ pipeline {
                     bat 'git checkout -B results'
                     bat 'git add target/surefire-reports/TEST-calculatorTest.xml'
                     bat 'git commit -m "Adding test results"'
-                    bat 'git push origin results'
+                    bat 'git push origin results https://github.com/VigneshGnanavel/junittesing.git'
                 }
             }
         }
