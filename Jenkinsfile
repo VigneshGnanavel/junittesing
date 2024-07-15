@@ -16,12 +16,14 @@ pipeline {
     stage('Upload to Artifactory') {
       agent {
         docker {
-          image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0' 
+          image 'releases-docker.jfrog.io/jfrog/jfrog-cli-v2:2.2.0'
           reuseNode true
         }
       }
       steps {
-        sh 'jfrog rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} C:\ProgramData\Jenkins\.jenkins\workspace\junittesting\target\surefire-reports\TEST-calculatorTest.xml results/'
+        sh """
+          jfrog rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/
+        """
       }
     }
   }
