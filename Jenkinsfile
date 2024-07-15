@@ -15,16 +15,19 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat 'mvn clean compile test'
+                bat './mvnw clean install'
             }
         }
     
-        stage('Upload to Artifactory') {
+        stage('Upload Test Results to Artifactory') {
             steps {
-                bat '''
-                    cd "C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\junitpipeline\\target\\surefire-reports"
-                    jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} TEST-calculatorTest.xml results/
-                '''
+                script {
+                    // Debug output to check directory contents
+                    bat 'dir target\\surefire-reports'
+                    
+                    // Upload test result file
+                    bat "jf rt upload -f --url http://172.17.208.1:8082/artifactory/ --access-token %ARTIFACTORY_ACCESS_TOKEN% target/surefire-reports/TEST-calculatorTest.xml results/"
+                }
             }
         }
     }
