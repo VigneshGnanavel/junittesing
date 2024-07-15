@@ -21,7 +21,9 @@ pipeline {
     
         stage('Upload to Artifactory') {
             steps {
-                bat 'jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml web-app-artifactory/'
+                bat 'jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml 
+
+results/'
             }
         }
     }
