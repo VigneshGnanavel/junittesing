@@ -18,6 +18,19 @@ pipeline {
                 bat 'mvn clean compile test'
             }
         }
+    stage('Git Commit and Push') {
+            steps {
+                script {
+                    bat 'git config --global user.name "VigneshGnanavel"'
+                    bat 'git config --global user.email "prathvikvignesh@gmail.com"'
+                    
+                    bat 'git checkout -B results'
+                    bat 'git add target/surefire-reports/TEST-calculatorTest.xml'
+                    bat 'git commit -m "Initial commit"'
+                    bat 'git push origin results'
+                }
+            }
+        }
     
         stage('Upload Test Results to Artifactory') {
             steps {
