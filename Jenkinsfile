@@ -39,7 +39,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
                         bat "snyk auth ${env.SNYK_API_TOKEN}"
-                        bat "snyk test --all-projects --json > snyk_report.json"
+                        bat "snyk test --all-projects --json > snyk_junit_report.json"
                     }
                 }
             }
@@ -47,7 +47,7 @@ pipeline {
         
         stage('Generate SBOM') {
             steps {
-                bat 'syft packages dir:. --scope AllLayers'
+                bat 'syft packages dir:. --scope AllLayers -o json > ./java_syft_junit_sbom.json'
             }
         }
         stage('Upload Test Results to Artifactory') {
@@ -55,6 +55,8 @@ pipeline {
                 script {
                     bat 'dir target\\surefire-reports'
                     bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/"
+                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json web-app-artifactory/"
+                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
                 }
             }
         }
