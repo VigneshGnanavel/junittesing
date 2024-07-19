@@ -45,6 +45,11 @@ pipeline {
             }
         }
         
+        stage('Generate SBOM') {
+            steps {
+                bat 'syft packages dir:. --scope AllLayers'
+            }
+        }
         stage('Upload Test Results to Artifactory') {
             steps {
                 script {
