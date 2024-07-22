@@ -11,7 +11,12 @@ pipeline {
         JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
         PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
     }
-  
+        
+        stage('Build') {
+            steps {
+                bat 'mvn clean compile test'
+            }
+        }
     stages {
         stage('Snyk Security Testing') {
             steps {
@@ -21,12 +26,6 @@ pipeline {
                         bat "snyk test --all-projects --json > snyk_junit_report.json"
                     }
                 }
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                bat 'mvn clean compile test'
             }
         }
         
