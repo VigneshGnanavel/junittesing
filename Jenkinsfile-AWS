@@ -8,7 +8,7 @@ pipeline {
     environment {
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
-        AWS_CREDENTIALS_ID = 'aws-credentials'
+        AWS_CREDENTIALS_ID = 'jenkins_aws_acesskey'
         JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
         PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
     }
