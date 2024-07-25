@@ -7,47 +7,86 @@ pipeline {
 
     environment {
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
-        AWS_CREDENTIALS_ID = 'jenkins_aws_acesskey'
-        JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
-        PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
+        ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
     }
-    
-    stages {
-        stage('Build') {
-            steps {
-                bat 'mvn clean compile'
-            }
-        }
 
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-        
-        stage('Upload Test Results to Artifactory') {
+    stages {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    bat 'dir target\\surefire-reports'
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/"
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json web-app-artifactory/"
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
+                    docker.build('my-jenkins-agent:latest')
                 }
             }
         }
 
-        stage('Deploy to AWS S3') {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'my-jenkins-agent:latest'
+                    args '-u root'
+                }
+            }
             steps {
-                withAWS(credentials: AWS_CREDENTIALS_ID, region: 'us-east-1') {
-                    s3Upload(
-                        bucket: 'jenkinstrialdemos3',
-                        file: 'target/my-app.jar',
-                        path: 'releases/my-app.jar'
-                    )
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            agent {
+                docker {
+                    image 'my-jenkins-agent:latest'
+                    args '-u root'
+                }
+            }
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Snyk Security Testing') {
+            agent {
+                docker {
+                    image 'my-jenkins-agent:latest'
+                    args '-u root'
+                }
+            }
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
+                        sh "snyk auth ${env.SNYK_API_TOKEN}"
+                        sh "snyk test --all-projects --json > snyk_junit_report.json"
+                    }
+                }
+            }
+        }
+
+        stage('Generate SBOM') {
+            agent {
+                docker {
+                    image 'my-jenkins-agent:latest'
+                    args '-u root'
+                }
+            }
+            steps {
+                sh 'syft packages dir:. --scope AllLayers -o json > ./java_syft_junit_sbom.json'
+            }
+        }
+
+        stage('Upload Test Results to Artifactory') {
+            agent {
+                docker {
+                    image 'my-jenkins-agent:latest'
+                    args '-u root'
+                }
+            }
+            steps {
+                script {
+                    sh 'ls target/surefire-reports'
+                    sh "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml results/"
+                    sh "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json web-app-artifactory/"
+                    sh "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
                 }
             }
         }
     }
 }
-
