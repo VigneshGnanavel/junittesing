@@ -30,7 +30,7 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    def PORT = 8080
+                    def PORT = 8089
                     def DOCKER_IMAGE_NAME = "calculatorproject"
                     def DOCKER_IMAGE_TAG = "latest"
                     bat "docker run -d -p ${PORT}:${PORT} --name junitdemotesting ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
