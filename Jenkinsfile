@@ -7,7 +7,7 @@ pipeline {
   
     environment {
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+        ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
         JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
         PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
     }
@@ -34,7 +34,7 @@ pipeline {
         stage('Snyk Security Testing') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
                         bat "snyk auth ${env.SNYK_API_TOKEN}"
                         bat "snyk test --all-projects --json > snyk_junit_report.json"
                     }
