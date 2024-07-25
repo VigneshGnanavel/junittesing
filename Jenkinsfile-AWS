@@ -1,55 +1,74 @@
 pipeline {
     agent any
 
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '5'))
+    }
+
     environment {
-        DOCKER_IMAGE = 'junittesting'
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        CI = true
+        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
+        JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
+        PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
     }
 
     stages {
+        stage('Clone Repository') {
+            steps {
+                git 'https://github.com/VigneshGnanavel/junittesing.git'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
-                    bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                    def dockerImage = docker.build("calculatorproject:latest")
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Tests in Docker') {
             steps {
                 script {
-                    // Run the container to execute tests
-                    bat "docker run --rm ${DOCKER_IMAGE}:${DOCKER_TAG} ./mvnw test"
+                    docker.image('calculatorproject:latest').inside {
+                        sh 'mvn test'
+                    }
                 }
             }
         }
 
-        stage('Archive Test Results') {
+        stage('Install Snyk CLI') {
             steps {
-                // Archive test results (Assuming Maven produces a test results file)
-                junit '**/target/surefire-reports/*.xml'
+                bat 'curl https://static.snyk.io/cli/latest/snyk-win.exe -o snyk.exe'
             }
         }
 
-        stage('Deploy') {
-            when {
-                branch 'main'
-            }
+        stage('Snyk Security Testing') {
             steps {
                 script {
-                    // Deploy the application (Example deployment step)
-                    echo "Deploying application..."
-                    // Add deployment steps here
+                    withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
+                        bat "snyk auth ${env.SNYK_API_TOKEN}"
+                        bat "snyk test --all-projects --json > snyk_junit_report.json"
+                    }
                 }
             }
         }
-    }
 
-    post {
-        always {
-            // Cleanup Docker images (Optional)
-            bat "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG} || true"
+        stage('Generate SBOM') {
+            steps {
+                bat 'syft packages dir:. --scope AllLayers -o json > java_syft_junit_sbom.json'
+            }
+        }
+
+        stage('Upload Test Results to Artifactory') {
+            steps {
+                script {
+                    bat 'dir target\\surefire-reports'
+                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target\\surefire-reports\\TEST-calculatorTest.xml results/"
+                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json web-app-artifactory/"
+                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
+                }
+            }
         }
     }
 }
