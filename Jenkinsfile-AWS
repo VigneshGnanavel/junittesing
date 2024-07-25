@@ -15,7 +15,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url:'https://github.com/VigneshGnanavel/junittesing.git'
+                git branch: 'main', url: 'https://github.com/VigneshGnanavel/junittesing.git'
             }
         }
 
@@ -30,8 +30,8 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    docker.image('calculatorproject:latest').inside {
-                        sh 'mvn test'
+                    docker.image('calculatorproject:latest').inside('-v C:/ProgramData/Jenkins/.jenkins/workspace/junitpipeline:C:/workspace -w C:/workspace') {
+                        bat 'mvn test'
                     }
                 }
             }
