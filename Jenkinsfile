@@ -1,10 +1,10 @@
 pipeline {
     agent any
-  
+
     options {
         buildDiscarder(logRotator(numToKeepStr: '5'))
     }
-  
+
     environment {
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
@@ -12,8 +12,14 @@ pipeline {
         MAVEN_HOME = 'C:\\Program Files\\apache-maven-3.9.8'
         PATH = "${env.JAVA_HOME}\\bin;${env.MAVEN_HOME}\\bin;${env.PATH}"
     }
-  
+
     stages {
+        stage('Install Snyk') {
+            steps {
+                bat 'npm install -g snyk'
+            }
+        }
+
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
@@ -36,13 +42,13 @@ pipeline {
                 }
             }
         }
-        
+
         stage('Generate SBOM') {
             steps {
                 bat 'syft packages dir:. --scope AllLayers -o json > ./java_syft_junit_sbom.json'
             }
         }
-        
+
         stage('Upload Test Results to Artifactory') {
             steps {
                 script {
