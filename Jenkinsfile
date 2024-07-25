@@ -10,7 +10,8 @@ pipeline {
         ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
         JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.4.7-hotspot'
         MAVEN_HOME = 'C:\\Program Files\\apache-maven-3.9.8'
-        PATH = "${env.JAVA_HOME}\\bin;${env.MAVEN_HOME}\\bin;${env.PATH}"
+        NODE_HOME = 'C:\\Program Files\\nodejs' // Update this to your Node.js installation path
+        PATH = "${env.JAVA_HOME}\\bin;${env.MAVEN_HOME}\\bin;${env.NODE_HOME};${env.PATH}"
     }
 
     stages {
