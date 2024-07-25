@@ -13,6 +13,12 @@ pipeline {
     }
     
     stages {
+        stage('Install Snyk CLI') {
+            steps {
+                bat 'npm install -g snyk'
+            }
+        }
+    
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
