@@ -28,17 +28,6 @@ pipeline {
         stage('Snyk Security Testing') {
             steps {
                 script {
-
-    
-        
-          
-    
-
-        
-        Expand All
-    
-    @@ -41,8 +47,8 @@ pipeline {
-  
                     withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
                         bat "snyk auth ${env.SNYK_API_TOKEN}"
                         bat "snyk test --all-projects --json > snyk_junit_report.json"
@@ -63,16 +52,5 @@ pipeline {
                 }
             }
         }
-
-    
-          
-            
-    
-
-          
-          Expand Down
-    
-    
-  
     }
 }
