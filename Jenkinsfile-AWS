@@ -30,7 +30,7 @@ pipeline {
         stage('Run Tests in Docker') {
             steps {
                 script {
-                    docker.image('calculatorproject:latest').inside('-v C:/ProgramData/Jenkins/.jenkins/workspace/junitpipeline:C:/workspace -w C:/workspace') {
+                    docker.image('calculatorproject:latest').inside('-v C:/ProgramData/Jenkins/.jenkins/workspace/junitpipeline:/workspace -w /workspace') {
                         bat 'mvn test'
                     }
                 }
