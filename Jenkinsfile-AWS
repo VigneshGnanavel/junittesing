@@ -33,7 +33,7 @@ pipeline {
                     def PORT = 8080
                     def DOCKER_IMAGE_NAME = "calculatorproject"
                     def DOCKER_IMAGE_TAG = "latest"
-                    bat "docker run -d -p ${PORT}:${PORT} --name mydemowebapp ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    bat "docker run -d -p ${PORT}:${PORT} --name junitdemotesting ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
