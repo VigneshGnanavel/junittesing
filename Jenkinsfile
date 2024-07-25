@@ -27,7 +27,7 @@ pipeline {
 
         stage('Install Snyk CLI') {
             steps {
-                bat 'npm install -g snyk'
+                bat 'curl https://static.snyk.io/cli/latest/snyk-win.exe -o snyk.exe'
             }
         }
 
