@@ -8,7 +8,7 @@ pipeline {
     environment {
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('Jenkins_jfrog')
-        AWS_ACCESS_KEY_ID = credentials('jenkins_aws_acess')
+        AWS_ACCESS_KEY_ID = credentials('jenkins_aws')
         JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
