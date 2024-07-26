@@ -7,9 +7,9 @@ pipeline {
 
     environment {
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('Jenkins_jfrog_aws')
+        ARTIFACTORY_ACCESS_TOKEN = credentials('Jenkins_jfrog')
         AWS_ACCESS_KEY_ID = credentials('jenkins_aws_acess')
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64' // Adjust to your JDK path if needed
+        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'
         PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
@@ -45,7 +45,7 @@ pipeline {
         stage('Snyk Security Testing') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'Jenkins_snyk_aws', variable: 'SNYK_API_TOKEN')]) {
+                    withCredentials([string(credentialsId: 'Jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
                         sh "./snyk auth ${env.SNYK_API_TOKEN}"
                         sh "./snyk test --all-projects --json > snyk_junit_report.json"
                     }
