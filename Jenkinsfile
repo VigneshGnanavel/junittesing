@@ -20,7 +20,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build and Test Docker Image') {
             steps {
                 script {
                     def dockerImage = docker.build("calculatorproject:latest")
