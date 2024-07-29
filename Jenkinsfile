@@ -7,7 +7,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('jenkins_aws')
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         MAVEN_HOME = '/usr/share/maven'  // Update this path if Maven is installed elsewhere
-        PATH = "${env.JAVA_HOME}/bin:${env.MAVEN_HOME}/bin:${env.PATH}"
+        PATH = "${env.JAVA_HOME}/bin:${env.MAVEN_HOME}/bin:${env.PATH}:${env.WORKSPACE}"
     }
 
     stages {
@@ -46,7 +46,7 @@ pipeline {
                 script {
                     sh 'curl https://static.snyk.io/cli/latest/snyk-linux -o snyk'
                     sh 'chmod +x ./snyk'
-                    sh 'sudo mv ./snyk /usr/local/bin/'
+                    env.PATH = "${env.WORKSPACE}:${env.PATH}"
                 }
             }
         }
