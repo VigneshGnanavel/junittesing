@@ -4,8 +4,7 @@ import org.junit.Test;
 import CalculatorProject.Calculator;
 
 public class CalculatorTest {
-
-    private Calculator calc;
+    Calculator calc;
 
     @Before
     public void setUp() {
@@ -13,22 +12,22 @@ public class CalculatorTest {
     }
 
     @Test
-    public void testAddTwoNumbers() {
+    public void addTwoNumbers() {
         assertEquals(20, calc.add(10, 10));
     }
 
     @Test
-    public void testAddThreeNumbers() {
+    public void addThreeNumbers() {
         assertEquals(20, calc.add(5, 5, 10));
     }
 
     @Test
-    public void testSubtractTwoNumbers() {
+    public void subtractTwoNumbers() {
         assertEquals(0, calc.subtract(10, 10));
     }
 
     @Test
-    public void testSubtractThreeNumbers() {
+    public void subtractThreeNumbers() {
         assertEquals(0, calc.subtract(20, 10, 10));
     }
 }
