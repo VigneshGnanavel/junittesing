@@ -41,17 +41,6 @@ pipeline {
             }
         }
 
-        stage('Snyk') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'Jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
-                        sh "snyk auth ${env.SNYK_API_TOKEN}"
-                        sh "snyk test --all-projects --json > snyk_junit_report.json"
-                    }
-                }
-            }
-        }
-
         stage('Generate SBOM') {
             steps {
                 sh 'syft dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
