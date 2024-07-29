@@ -6,7 +6,7 @@ pipeline {
         ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
         AWS_ACCESS_KEY_ID = credentials('jenkins_aws')
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
-        MAVEN_HOME = '/usr/share/maven'  // Update this path if Maven is installed elsewhere
+        MAVEN_HOME = '/usr/share/maven'
         PATH = "${env.JAVA_HOME}/bin:${env.MAVEN_HOME}/bin:${env.PATH}"
     }
 
