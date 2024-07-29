@@ -11,7 +11,7 @@ pipeline {
     }
 
     stages {
-        stage('Prepare Workspace') {
+        stage('Workspace') {
             steps {
                 script {
                     deleteDir()
