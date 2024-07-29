@@ -11,6 +11,14 @@ pipeline {
     }
 
     stages {
+        stage('Prepare Workspace') {
+            steps {
+                script {
+                    deleteDir()
+                }
+            }
+        }
+
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/VigneshGnanavel/junittesing.git'
@@ -20,7 +28,6 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Run Maven build
                     sh 'mvn clean compile'
                 }
             }
@@ -29,7 +36,6 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Run Maven test
                     sh 'mvn test'
                 }
             }
