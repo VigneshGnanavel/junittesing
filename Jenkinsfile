@@ -41,7 +41,7 @@ pipeline {
             }
         }
 
-        stage('Snyk Security Testing') {
+        stage('Snyk') {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'Jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
