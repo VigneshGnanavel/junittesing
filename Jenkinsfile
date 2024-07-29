@@ -51,7 +51,6 @@ pipeline {
             steps {
                 script {
                     sh 'aws s3 cp target/surefire-reports s3://jenkinstrialdemos3/results/ --recursive'
-                    sh 'aws s3 cp target/calculatorproject.jar s3://jenkinstrialdemos3/jars/YoutubeAutomatedTesting-0.0.1-SNAPSHOT.jar'
                 }
             }
         }
