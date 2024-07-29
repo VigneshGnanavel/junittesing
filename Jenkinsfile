@@ -1,16 +1,13 @@
 pipeline {
     agent any
 
-    options {
-        buildDiscarder(logRotator(numToKeepStr: '5'))
-    }
-
     environment {
         CI = true
         ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
         AWS_ACCESS_KEY_ID = credentials('jenkins_aws')
-        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'
-        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        MAVEN_HOME = '/usr/share/maven'  // Update this path if Maven is installed elsewhere
+        PATH = "${env.JAVA_HOME}/bin:${env.MAVEN_HOME}/bin:${env.PATH}"
     }
 
     stages {
