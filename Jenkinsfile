@@ -20,6 +20,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
+                    // Run Maven build
                     sh 'mvn clean compile'
                 }
             }
@@ -28,6 +29,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
+                    // Run Maven test
                     sh 'mvn test'
                 }
             }
@@ -35,7 +37,12 @@ pipeline {
 
         stage('Install Snyk CLI') {
             steps {
-                sh 'curl -sSLo snyk https://static.snyk.io/cli/latest/snyk-linux && chmod +x snyk'
+                script {
+                    // Install Snyk CLI
+                    sh 'curl https://static.snyk.io/cli/latest/snyk-linux -o snyk'
+                    sh 'chmod +x ./snyk'
+                    sh 'mv ./snyk /usr/local/bin/'
+                }
             }
         }
 
@@ -43,8 +50,8 @@ pipeline {
             steps {
                 script {
                     withCredentials([string(credentialsId: 'Jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
-                        sh "./snyk auth ${env.SNYK_API_TOKEN}"
-                        sh "./snyk test --all-projects --json > snyk_junit_report.json"
+                        sh "snyk auth ${env.SNYK_API_TOKEN}"
+                        sh "snyk test --all-projects --json > snyk_junit_report.json"
                     }
                 }
             }
