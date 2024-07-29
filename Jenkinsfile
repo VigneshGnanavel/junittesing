@@ -20,18 +20,18 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
                 script {
-                    sh 'docker build -t calculatorproject:latest .'
+                    sh 'mvn clean compile'
                 }
             }
         }
-        
-        stage('Run Docker Container') {
+
+        stage('Test') {
             steps {
                 script {
-                    sh 'docker run --name junitdemotesting -d calculatorproject:latest'
+                    sh 'mvn test'
                 }
             }
         }
