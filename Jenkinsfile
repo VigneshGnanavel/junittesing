@@ -46,6 +46,16 @@ pipeline {
                 sh 'syft dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
             }
         }
+        stage('Snyk Security Testing') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
+                        bat "snyk auth ${env.SNYK_API_TOKEN}"
+                        bat "snyk test --all-projects --json > snyk_junit_report.json"
+                    }
+                }
+            }
+        }
 
         stage('Upload Results and .jar File to S3') {
             steps {
