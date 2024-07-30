@@ -46,6 +46,13 @@ pipeline {
                 sh 'syft dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
             }
         }
+         stage('Install Snyk CLI') {
+            steps {
+                sh 'curl https://static.snyk.io/cli/latest/snyk-linux -o snyk'
+                sh 'chmod +x ./snyk'
+                sh 'sudo mv ./snyk /usr/local/bin/'
+            }
+        }
         stage('Snyk Security Testing') {
             steps {
                 script {
