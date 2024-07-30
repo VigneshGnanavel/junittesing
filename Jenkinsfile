@@ -62,9 +62,10 @@ pipeline {
         stage('Upload Test Results to Artifactory') {
             steps {
                 script {
-                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml jt-junit/"
-                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json jt-junit/"
-                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
+                    sh 'ls -l /var/lib/jenkins/workspace/junittesting/target/surefire-reports/'
+                    sh 'jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/target/surefire-reports/TEST-CalculatorTest.xml jt/'
+                    sh 'jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/java_syft_junit_sbom.json jt/'
+                    sh 'jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/snyk_junit_report.json jt/'
                 }
             }
         }
