@@ -35,7 +35,7 @@ pipeline {
                 script {
                     withCredentials([string(credentialsId: 'jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
                         sh "snyk auth ${env.SNYK_API_TOKEN}"
-                        sh "snyk test --all-projects --json --debug > snyk_junit_report.json"
+                        sh "snyk test --all-projects --json > snyk_junit_report.json"
                     }
                 }
             }
@@ -43,11 +43,11 @@ pipeline {
 
         stage('Generate SBOM') {
             steps {
-                sh 'syft packages dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
+                sh 'syft scan dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
             }
         }
 
-        stage('Upload Test Results to Artifactory') {
+        stage('Artifactory') {
             steps {
                 script {
                     sh 'ls -la target/surefire-reports'
