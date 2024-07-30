@@ -13,12 +13,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git branch: 'main', url: 'https://github.com/VigneshGnanavel/junittesing.git'
-            }
-        }
-
         stage('Build Docker Image') {
             steps {
                 script {
