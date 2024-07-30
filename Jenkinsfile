@@ -48,15 +48,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Install Snyk CLI') {
-            steps {
-                script {
-                    sh 'sudo npm install -g snyk'
-                }
-            }
-        }
-
         stage('Snyk Security Testing') {
             steps {
                 script {
@@ -68,7 +59,7 @@ pipeline {
             }
         }
 
-        stage('Upload Results and .jar File to S3') {
+        stage('Upload Results File to S3') {
             steps {
                 script {
                     sh 'aws s3 cp target/surefire-reports s3://jenkinstrialdemos3/results/ --recursive'
