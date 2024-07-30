@@ -48,9 +48,7 @@ pipeline {
         }
          stage('Install Snyk CLI') {
             steps {
-                sh 'curl https://static.snyk.io/cli/latest/snyk-linux -o snyk'
-                sh 'chmod +x ./snyk'
-                sh 'sudo mv ./snyk /usr/local/bin/'
+                npm install -g snyk
             }
         }
         stage('Snyk Security Testing') {
