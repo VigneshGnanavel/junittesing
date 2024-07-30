@@ -52,7 +52,7 @@ pipeline {
         stage('Upload Results File to S3') {
             steps {
                 script {
-                    sh 'aws s3 cp target/surefire-reports s3://jenkinstrialdemos3/results/ --recursive'
+                    sh 'aws s3 cp target/surefire-reports s3://jenkindemos3/results/ --recursive'
                 }
             }
         }
