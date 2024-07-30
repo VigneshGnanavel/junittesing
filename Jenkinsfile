@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog')
+        ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog_gcp')
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
         MAVEN_HOME = '/usr/share/maven'
         PATH = "${env.JAVA_HOME}/bin:${env.MAVEN_HOME}/bin:${env.PATH}"
@@ -39,6 +39,17 @@ pipeline {
                 }
             }
         }
+         stage('Snyk Testing') {
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
+                        sh "export SNYK_TOKEN=${env.SNYK_API_TOKEN}"
+                        sh "snyk auth ${env.SNYK_API_TOKEN}"
+                        sh "snyk test --all-projects --json > snyk_junit_report.json"
+                    }
+                }
+            }
+        }
 
         stage('Generate SBOM') {
             steps {
@@ -51,9 +62,9 @@ pipeline {
         stage('Upload Test Results to Artifactory') {
             steps {
                 script {
-                    sh 'ls -la target/surefire-reports'
                     sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml jt-junit/"
                     sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json jt-junit/"
+                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
                 }
             }
         }
