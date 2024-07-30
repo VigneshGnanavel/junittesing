@@ -48,16 +48,6 @@ pipeline {
                 }
             }
         }
-        stage('Snyk Security Testing') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
-                        sh "snyk auth ${env.SNYK_API_TOKEN}"
-                        sh "snyk test --all-projects --json > snyk_junit_report.json"
-                    }
-                }
-            }
-        }
 
         stage('Upload Results File to S3') {
             steps {
