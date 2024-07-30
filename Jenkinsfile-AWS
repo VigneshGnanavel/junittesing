@@ -7,9 +7,9 @@ pipeline {
 
     environment {
         CI = true
-        ARTIFACTORY_ACCESS_TOKEN = credentials('artifactory-access-token')
-        JAVA_HOME = 'C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.23.9-hotspot'
-        PATH = "${env.JAVA_HOME}\\bin;${env.PATH}"
+        ARTIFACTORY_ACCESS_TOKEN = credentials('jenkins_jfrog_gcp')
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64'
+        PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
     }
 
     stages {
@@ -30,26 +30,18 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    def PORT = 8089
                     def DOCKER_IMAGE_NAME = "calculatorproject"
                     def DOCKER_IMAGE_TAG = "latest"
-                    bat "docker run -d -p ${PORT}:${PORT} --name junitdemotesting ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker run -d --name junitdemotesting ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
-
-        stage('Install Snyk CLI') {
-            steps {
-                bat 'curl https://static.snyk.io/cli/latest/snyk-win.exe -o snyk.exe'
-            }
-        }
-
         stage('Snyk Security Testing') {
             steps {
                 script {
-                    withCredentials([string(credentialsId: 'snyk_test', variable: 'SNYK_API_TOKEN')]) {
-                        bat "snyk auth ${env.SNYK_API_TOKEN}"
-                        bat "snyk test --all-projects --json > snyk_junit_report.json"
+                    withCredentials([string(credentialsId: 'jenkins_snyk', variable: 'SNYK_API_TOKEN')]) {
+                        sh "snyk auth ${env.SNYK_API_TOKEN}"
+                        sh "snyk test --all-projects --json > snyk_junit_report.json"
                     }
                 }
             }
@@ -57,17 +49,17 @@ pipeline {
 
         stage('Generate SBOM') {
             steps {
-                bat 'syft packages dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
+                sh 'syft packages dir:. --scope all-layers -o json > java_syft_junit_sbom.json'
             }
         }
 
         stage('Upload Test Results to Artifactory') {
             steps {
                 script {
-                    bat 'dir target\\surefire-reports'
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target\\surefire-reports\\TEST-calculatorTest.xml results/"
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json web-app-artifactory/"
-                    bat "jf rt upload --url http://172.17.208.1:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json web-app-artifactory/"
+                    sh 'ls -la target/surefire-reports'
+                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} target/surefire-reports/TEST-calculatorTest.xml jt/"
+                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} java_syft_junit_sbom.json jt/"
+                    sh "jf rt upload --url http://35.226.41.135:8082/artifactory/ --access-token ${env.ARTIFACTORY_ACCESS_TOKEN} snyk_junit_report.json jt/"
                 }
             }
         }
