@@ -65,7 +65,7 @@ pipeline {
                     sh 'ls -l /var/lib/jenkins/workspace/junittesting/target/surefire-reports/'
                     sh 'jf rt upload --url http://34.132.36.185:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/target/surefire-reports/TEST-CalculatorTest.xml generic-local/'
                     sh 'jf rt upload --url http://34.132.36.185:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/java_syft_junit_sbom.json generic-local/'
-                    sh 'jf rt upload --url http://34.132.36.185/:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/snyk_junit_report.json generic-local/'
+                    sh 'jf rt upload --url http://34.132.36.185:8082/artifactory/ --access-token $ARTIFACTORY_ACCESS_TOKEN /var/lib/jenkins/workspace/junittesting/snyk_junit_report.json generic-local/'
                 }
             }
         }
